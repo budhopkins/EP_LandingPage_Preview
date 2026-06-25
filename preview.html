@@ -1,0 +1,1309 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>EP Cancellation LP — State Preview</title>
+    <style>
+      /* ── Preview bar ───────────────────────────────────────────── */
+      #preview-bar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 100;
+        background: #1a1a2e;
+        color: #ffffff;
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        padding: 0 20px;
+        height: 44px;
+        font-family: "source-sans-pro", "Helvetica", "Arial", sans-serif;
+        font-size: 0.9rem;
+      }
+      .preview-bar__label {
+        font-weight: 700;
+        font-size: 0.78rem;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        opacity: 0.65;
+        white-space: nowrap;
+      }
+      #state-picker {
+        padding: 4px 10px;
+        border-radius: 4px;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        background: rgba(255, 255, 255, 0.12);
+        color: #ffffff;
+        font-size: 0.9rem;
+        font-family: inherit;
+        cursor: pointer;
+        min-width: 230px;
+      }
+      #state-picker option {
+        background: #1a1a2e;
+        color: #ffffff;
+      }
+      .preview-bar__note {
+        font-size: 0.78rem;
+        opacity: 0.5;
+        margin-left: auto;
+        white-space: nowrap;
+      }
+
+      /* ── Override: offset body + sticky header for preview bar ── */
+      body {
+        padding-top: 44px;
+      }
+      .site-header {
+        top: 44px !important;
+      }
+
+      /* ── Production styles (verbatim from styles.css) ─────────── */
+      :root {
+        --ep-orange: #f99d33;
+        --ep-orange-deep: #e67e00;
+        --ep-orange-hero: #f7b24a;
+        --ep-blue: #007885;
+        --ep-cream: #fff6eb;
+        --ep-cream-soft: #fbf6ef;
+        --ep-border: #ece7de;
+        --ep-ink: #101010;
+        --ep-muted: #6b6b6b;
+        --ep-white: #ffffff;
+        --ep-shadow: 0 14px 32px rgba(16, 16, 16, 0.06);
+      }
+
+      @font-face {
+        font-family: "source-sans-pro";
+        src:
+          url("https://www.hellofresh.com/assets/fonts/source-sans-pro-v11/latin-regular.woff2")
+            format("woff2");
+        font-style: normal;
+        font-display: swap;
+        font-weight: 400;
+      }
+
+      @font-face {
+        font-family: "source-sans-pro";
+        src:
+          url("https://www.hellofresh.com/assets/fonts/source-sans-pro-v11/latin-600.woff2")
+            format("woff2");
+        font-style: normal;
+        font-display: swap;
+        font-weight: 600;
+      }
+
+      @font-face {
+        font-family: "source-sans-pro";
+        src:
+          url("https://www.hellofresh.com/assets/fonts/source-sans-pro-v11/latin-700.woff2")
+            format("woff2");
+        font-style: normal;
+        font-display: swap;
+        font-weight: 700;
+      }
+
+      @font-face {
+        font-family: "sonny-cond";
+        src:
+          url("https://www.hellofresh.com/assets/fonts/everyplate/wfoundry_sonny/SonnyCond-Bold.woff2")
+            format("woff2");
+        font-style: normal;
+        font-display: swap;
+        font-weight: 600;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+        overflow-x: clip;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        font-family: "source-sans-pro", "Helvetica", "Arial", sans-serif;
+        color: var(--ep-ink);
+        background: var(--ep-white);
+        font-size: 16px;
+        line-height: 1.5;
+        overflow-x: clip;
+      }
+
+      img {
+        display: block;
+        max-width: 100%;
+      }
+
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+
+      .page-shell {
+        width: min(1180px, calc(100% - 40px));
+        margin: 0 auto;
+        padding: 0 0 64px;
+      }
+
+      .legal-footer {
+        width: 100vw;
+        margin-left: calc(50% - 50vw);
+        margin-right: calc(50% - 50vw);
+        padding: 28px max(calc((100vw - 1180px) / 2), 20px) 36px;
+        background: var(--ep-orange-hero);
+      }
+
+      .legal-footer__inner {
+        max-width: 1180px;
+        margin: 0 auto;
+      }
+
+      .legal-footer__title {
+        margin: 0 0 12px;
+        font-size: 0.95rem;
+        font-weight: 700;
+        color: var(--ep-ink);
+      }
+
+      .legal-footer__copy {
+        max-width: 1180px;
+        margin: 0;
+        color: var(--ep-ink);
+        font-size: 0.78rem;
+        line-height: 1.55;
+      }
+
+      .legal-footer__copy + .legal-footer__copy {
+        margin-top: 12px;
+      }
+
+      .site-header {
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        background: rgba(255, 255, 255, 0.97);
+        border-bottom: 1px solid var(--ep-border);
+      }
+
+      .site-header__inner {
+        width: min(1180px, calc(100% - 40px));
+        min-height: 64px;
+        margin: 0 auto;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+      }
+
+      .site-header__brand {
+        display: inline-flex;
+        align-items: center;
+      }
+
+      .site-header__brand img {
+        width: 132px;
+        height: auto;
+      }
+
+      .site-header__login {
+        margin-left: auto;
+        color: var(--ep-ink);
+        font-size: 0.95rem;
+        font-weight: 600;
+        line-height: 1;
+        white-space: nowrap;
+        padding: 10px 16px;
+        border: 1px solid var(--ep-ink);
+        border-radius: 999px;
+        background: var(--ep-white);
+      }
+
+      .site-header__login:hover,
+      .site-header__login:focus-visible {
+        color: var(--ep-orange-deep);
+        border-color: var(--ep-orange-deep);
+      }
+
+      .order-status,
+      .hero,
+      .credit-banner,
+      .survey {
+        position: relative;
+        padding: 36px 0;
+        background: var(--ep-white);
+        border-radius: 0;
+        box-shadow: none;
+      }
+
+      .credit-banner,
+      .survey {
+        border-top: 1px solid var(--ep-border);
+      }
+
+      .order-status {
+        display: block;
+        width: 100vw;
+        margin-left: calc(50% - 50vw);
+        margin-right: calc(50% - 50vw);
+        min-height: 520px;
+        padding-top: 88px;
+        padding-bottom: 96px;
+        background-color: var(--ep-orange-hero);
+        background-image: url("./Desktop.jpg");
+        background-position: center center;
+        background-repeat: no-repeat;
+        background-size: 132% auto;
+        padding-left: max(calc((100vw - 1180px) / 2), 20px);
+        padding-right: max(calc((100vw - 1180px) / 2), 20px);
+      }
+
+      .order-status__copy h1 {
+        max-width: none;
+        margin: 0 auto;
+        font-size: clamp(2.2rem, 3.2vw, 3.2rem);
+        line-height: 0.96;
+        letter-spacing: -0.04em;
+        font-family: "sonny-cond", "Arial Black", sans-serif;
+        font-weight: 600;
+        color: var(--ep-white);
+        text-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
+      }
+
+      .order-status__spacer {
+        height: 42px;
+      }
+
+      .order-status__copy p,
+      .order-status__panel-card p {
+        color: var(--ep-white);
+        font-size: 1.05rem;
+        line-height: 1.6;
+        text-shadow: 0 1px 4px rgba(0, 0, 0, 0.16);
+      }
+
+      .order-status__copy {
+        max-width: 860px;
+        margin: 0 auto;
+        padding: 10px 0;
+        text-align: center;
+      }
+
+      .order-status__copy p {
+        max-width: 48ch;
+        margin: 22px 0 0;
+        margin-left: auto;
+        margin-right: auto;
+        text-align: center;
+        font-size: 1.22rem;
+        line-height: 1.5;
+      }
+
+      .order-status__metrics {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 12px;
+        margin-top: 22px;
+        max-width: 760px;
+      }
+
+      .decision-panel {
+        margin-top: 48px;
+        padding: 0 28px;
+      }
+
+      .page-greeting {
+        margin: 0 0 8px;
+        font-weight: 700;
+        color: var(--ep-ink);
+        font-size: 1.05rem;
+      }
+
+      .decision-panel__grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 36px;
+        align-items: stretch;
+      }
+
+      .decision-panel__context {
+        display: flex;
+        flex-direction: column;
+        padding: 0;
+        border: 0;
+        background: transparent;
+        min-height: 100%;
+      }
+
+      .decision-panel__context p {
+        margin: 18px 0 0;
+        color: var(--ep-ink);
+        font-size: 1.08rem;
+        line-height: 1.6;
+      }
+
+      .decision-panel__context a {
+        color: var(--ep-orange-deep);
+        text-decoration: underline;
+        text-underline-offset: 2px;
+      }
+
+      .decision-panel__visual {
+        width: 100%;
+        margin-top: 28px;
+      }
+
+      .decision-panel__tracker-image {
+        width: 100%;
+        height: auto;
+        border: 0;
+        background: transparent;
+      }
+
+      .credit-banner {
+        margin-top: 0;
+        padding: 24px 24px 22px;
+        border: 0;
+        border-top: 0;
+        background: #fff7ee;
+        background-image: none;
+        box-shadow: none;
+        height: 100%;
+      }
+
+      .credit-banner__content {
+        display: flex;
+        flex-direction: column;
+        min-height: 100%;
+      }
+
+      .credit-banner--90 {
+        box-shadow: none;
+      }
+
+      .credit-banner--60 {
+        box-shadow: none;
+      }
+
+      .credit-banner--0 {
+        box-shadow: none;
+      }
+
+      .credit-banner--expired,
+      .credit-banner--pending,
+      .credit-banner--invalid {
+        box-shadow: none;
+      }
+
+      .credit-banner__content h2 {
+        margin: 0;
+        font-size: clamp(2rem, 4vw, 3.15rem);
+        line-height: 0.98;
+        letter-spacing: -0.04em;
+        font-family: "sonny-cond", "Arial Black", sans-serif;
+        font-weight: 600;
+        max-width: none;
+      }
+
+      .credit-banner__content > p {
+        max-width: 60ch;
+        margin: 14px 0 0;
+        color: var(--ep-ink);
+        font-size: 1.05rem;
+        line-height: 1.6;
+      }
+
+      .credit-progress {
+        display: flex;
+        align-items: flex-start;
+        gap: 0;
+        margin-top: 20px;
+        margin-bottom: 4px;
+      }
+
+      .credit-progress__step {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+        flex: 0 0 auto;
+      }
+
+      .credit-progress__dot {
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        border: 2.5px solid rgba(0, 120, 133, 0.35);
+        background: var(--ep-white);
+        transition: background 240ms ease, border-color 240ms ease;
+        flex-shrink: 0;
+      }
+
+      .credit-progress__line {
+        flex: 1;
+        height: 2.5px;
+        background: rgba(0, 120, 133, 0.2);
+        margin-top: 7.5px;
+        transition: background 240ms ease;
+      }
+
+      .credit-progress__labels {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 2px;
+        text-align: center;
+      }
+
+      .credit-progress__stage {
+        font-size: 0.72rem;
+        font-weight: 600;
+        color: var(--ep-muted);
+        line-height: 1.2;
+        white-space: nowrap;
+      }
+
+      .credit-progress__pct {
+        font-size: 0.72rem;
+        font-weight: 700;
+        color: var(--ep-muted);
+        line-height: 1.2;
+      }
+
+      .credit-progress__step--active .credit-progress__dot {
+        background: var(--ep-blue);
+        border-color: var(--ep-blue);
+      }
+
+      .credit-progress__step--active .credit-progress__stage,
+      .credit-progress__step--active .credit-progress__pct {
+        color: var(--ep-blue);
+      }
+
+      .credit-progress__step--past .credit-progress__dot {
+        background: rgba(0, 120, 133, 0.35);
+        border-color: rgba(0, 120, 133, 0.35);
+      }
+
+      .credit-progress__line--past {
+        background: rgba(0, 120, 133, 0.5);
+      }
+
+      .credit-outcome {
+        max-width: none;
+        margin-top: 20px;
+        padding: 24px 24px 22px;
+        border: 0;
+        background: rgba(0, 120, 133, 0.88);
+      }
+
+      .credit-outcome__eyebrow {
+        display: block;
+        font-size: 0.8rem;
+        font-weight: 700;
+        letter-spacing: 0.02em;
+        text-transform: uppercase;
+        color: rgba(255, 255, 255, 0.78);
+      }
+
+      .credit-outcome__value {
+        display: block;
+        margin-top: 6px;
+        font-size: clamp(2.6rem, 5vw, 4.25rem);
+        line-height: 0.98;
+        letter-spacing: -0.03em;
+        font-family: "sonny-cond", "Arial Black", sans-serif;
+        font-weight: 600;
+        color: var(--ep-white);
+      }
+
+      .credit-outcome .credit-outcome__detail {
+        margin: 10px 0 0;
+        font-size: 1.05rem;
+        line-height: 1.6;
+        color: rgba(255, 255, 255, 0.94);
+      }
+
+      .credit-outcome,
+      .credit-outcome p,
+      .credit-outcome span,
+      .credit-outcome strong {
+        color: var(--ep-white);
+      }
+
+      .credit-outcome .credit-outcome__eyebrow {
+        color: rgba(255, 255, 255, 0.78);
+      }
+
+      .credit-outcome p.credit-outcome__detail {
+        color: rgba(255, 255, 255, 0.94);
+      }
+
+      .credit-banner__note {
+        margin: auto 0 0;
+        color: #4f4a43;
+        font-size: 1.05rem;
+        line-height: 1.6;
+        max-width: 60ch;
+      }
+
+      .decision-panel__details {
+        margin-top: 28px;
+        padding: 22px 24px;
+        background: #fff7ee;
+      }
+
+      .decision-panel__details h3 {
+        margin: 0 0 16px;
+        font-size: clamp(1.45rem, 2.4vw, 1.85rem);
+        line-height: 1.02;
+        letter-spacing: -0.03em;
+        font-family: "sonny-cond", "Arial Black", sans-serif;
+        font-weight: 600;
+      }
+
+      .decision-panel__detail-line {
+        margin: 0;
+        color: var(--ep-ink);
+        font-size: 1rem;
+        line-height: 1.6;
+      }
+
+      .decision-panel__detail-line + .decision-panel__detail-line {
+        margin-top: 12px;
+      }
+
+      .credit-banner--90 .credit-outcome,
+      .credit-banner--60 .credit-outcome,
+      .credit-banner--0 .credit-outcome,
+      .credit-banner--expired .credit-outcome,
+      .credit-banner--pending .credit-outcome,
+      .credit-banner--invalid .credit-outcome {
+        background: rgba(0, 120, 133, 0.88);
+      }
+
+      .survey h2 {
+        margin: 0;
+        line-height: 0.98;
+        letter-spacing: -0.04em;
+        font-family: "sonny-cond", "Arial Black", sans-serif;
+        font-weight: 600;
+      }
+
+      .survey p {
+        font-size: 1.05rem;
+        line-height: 1.6;
+        color: var(--ep-ink);
+      }
+
+      .hero__actions {
+        display: flex;
+        gap: 14px;
+        margin-top: 36px;
+        justify-content: center;
+      }
+
+      .button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 48px;
+        padding: 0 24px;
+        border: 0;
+        border-radius: 6px;
+        appearance: none;
+        font-family: "source-sans-pro", "Helvetica", "Arial", sans-serif;
+        font-size: 1rem;
+        font-weight: 700;
+        transition:
+          transform 160ms ease,
+          box-shadow 160ms ease,
+          background-color 160ms ease;
+      }
+
+      .button--primary {
+        background: var(--ep-orange);
+        color: var(--ep-white);
+        box-shadow: none;
+      }
+
+      .button--cool {
+        background: var(--ep-blue);
+        color: var(--ep-white);
+        box-shadow: none;
+      }
+
+      .button--primary:hover,
+      .button--primary:focus-visible {
+        transform: translateY(-1px);
+        background: #f58c10;
+        box-shadow: none;
+      }
+
+      .button--cool:hover,
+      .button--cool:focus-visible {
+        transform: translateY(-1px);
+        background: #05616b;
+        box-shadow: none;
+      }
+
+      .button[disabled] {
+        cursor: not-allowed;
+        opacity: 0.7;
+        transform: none;
+        box-shadow: none;
+      }
+
+      .survey {
+        margin-top: 48px;
+        padding: 40px 28px;
+        background: var(--ep-blue);
+      }
+
+      .survey__header {
+        max-width: 76ch;
+        margin-bottom: 26px;
+      }
+
+      .survey h2 {
+        font-size: clamp(2rem, 4vw, 3rem);
+        color: var(--ep-white);
+      }
+
+      .survey__header p {
+        margin: 14px 0 0;
+        max-width: 68ch;
+      }
+
+      .survey-form {
+        display: grid;
+        gap: 24px;
+      }
+
+      .survey p {
+        color: var(--ep-white);
+      }
+
+      .survey-form__grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 18px;
+      }
+
+      .form-field {
+        display: grid;
+        gap: 10px;
+      }
+
+      .form-field span {
+        font-size: 0.95rem;
+        font-weight: 700;
+        color: var(--ep-white);
+      }
+
+      .form-field input,
+      .form-field textarea {
+        width: 100%;
+        padding: 16px 18px;
+        border: 1px solid var(--ep-border);
+        border-radius: 0;
+        background: var(--ep-white);
+        color: var(--ep-ink);
+        font: inherit;
+        transition:
+          border-color 160ms ease,
+          box-shadow 160ms ease,
+          background-color 160ms ease;
+      }
+
+      .form-field input[readonly] {
+        color: rgba(255, 255, 255, 0.92);
+        background: rgba(255, 255, 255, 0.12);
+        border-color: rgba(255, 255, 255, 0.28);
+        cursor: not-allowed;
+      }
+
+      .form-field input:focus,
+      .form-field textarea:focus {
+        outline: none;
+        border-color: rgba(216, 107, 0, 0.48);
+        box-shadow: 0 0 0 4px rgba(255, 143, 28, 0.12);
+        background: var(--ep-white);
+      }
+
+      .form-field textarea {
+        min-height: 170px;
+        resize: vertical;
+      }
+
+      .form-field--full {
+        grid-column: 1 / -1;
+      }
+
+      .survey-form__footer {
+        padding: 24px 0 0;
+        border-top: 1px solid rgba(255, 255, 255, 0.22);
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        gap: 18px;
+      }
+
+      .survey-form__summary {
+        margin: 0;
+        font-size: 1.02rem;
+        color: var(--ep-white);
+        flex: 1;
+        order: 2;
+      }
+
+      .survey-form__footer .button {
+        order: 1;
+      }
+
+      .form-feedback {
+        padding: 16px 18px;
+        border: 1px solid rgba(216, 107, 0, 0.14);
+        background: rgba(255, 255, 255, 0.92);
+        color: var(--ep-ink);
+        border-radius: 0;
+      }
+
+      .form-feedback[data-state="success"] {
+        border-color: rgba(31, 128, 76, 0.18);
+        background: rgba(234, 248, 239, 0.92);
+      }
+
+      .form-feedback[data-state="duplicate"] {
+        border-color: rgba(216, 107, 0, 0.18);
+        background: rgba(255, 246, 230, 0.94);
+      }
+
+      .form-feedback[data-state="error"] {
+        border-color: rgba(176, 42, 42, 0.18);
+        background: rgba(255, 239, 239, 0.94);
+      }
+
+      @media (max-width: 900px) {
+        .credit-banner {
+          padding: 24px;
+        }
+
+        .decision-panel {
+          padding: 0 20px;
+        }
+
+        .decision-panel__grid {
+          grid-template-columns: 1fr;
+        }
+
+        .order-status {
+          min-height: 0;
+          padding-top: 36px;
+          padding-bottom: 40px;
+          padding-left: 20px;
+          padding-right: 20px;
+          background-size: cover;
+          background-position: center center;
+        }
+
+        .survey {
+          padding: 32px 20px 24px;
+        }
+
+        .legal-footer {
+          padding: 24px 20px 30px;
+        }
+
+        .survey-form__grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      @media (max-width: 640px) {
+        .page-shell {
+          width: min(100% - 20px, 1180px);
+        }
+
+        .site-header__inner {
+          width: min(100% - 20px, 1180px);
+          min-height: 64px;
+        }
+
+        .order-status {
+          gap: 18px;
+          padding-top: 28px;
+          padding-bottom: 32px;
+          padding-left: 20px;
+          padding-right: 20px;
+        }
+
+        .credit-banner {
+          padding: 22px 20px;
+        }
+
+        .survey-form__footer {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+
+        .button {
+          width: 100%;
+        }
+
+        .hero__actions {
+          flex-direction: column;
+        }
+
+        .credit-banner__content p,
+        .survey p {
+          font-size: 0.98rem;
+        }
+
+        .decision-panel {
+          padding: 0;
+        }
+
+        .decision-panel__grid {
+          gap: 18px;
+        }
+
+        .decision-panel__tracker-image {
+          border-width: 0;
+        }
+
+        .legal-footer__copy {
+          font-size: 0.74rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+
+    <div id="preview-bar">
+      <span class="preview-bar__label">Preview state</span>
+      <select id="state-picker" onchange="switchState(this.value)">
+        <option value="90">90% Credit — full (within 16h of cut-off)</option>
+        <option value="60">60% Credit — partial (16–48h after cut-off)</option>
+        <option value="0">0% Credit — none (48h+ after cut-off)</option>
+        <option value="expired">Expired — delivery date passed</option>
+        <option value="error">Error — invalid / missing link</option>
+      </select>
+      <span class="preview-bar__note">Internal preview only — not for customer distribution</span>
+    </div>
+
+    <header class="site-header">
+      <div class="site-header__inner">
+        <a class="site-header__brand" href="https://www.everyplate.com.au/" aria-label="EveryPlate home">
+          <img
+            src="https://media.everyplate.com/w_256%2Cq_100%2Cf_auto%2Cc_limit%2Cfl_lossy/hellofresh_website/logo/whitelabel_logos_lg/ep_lg.png"
+            alt="EveryPlate"
+          />
+        </a>
+        <a class="site-header__login" href="https://www.everyplate.com.au/login">Log in</a>
+      </div>
+    </header>
+
+    <main class="page-shell">
+      <section class="order-status" aria-labelledby="order-status-title">
+        <div class="order-status__copy">
+          <div class="order-status__spacer" aria-hidden="true"></div>
+          <h1 id="order-status-title">Box already on its way? We got you.</h1>
+          <p id="order-status-copy">
+            Your box is being prepared, but you can still request to cancel it here.
+          </p>
+          <div class="hero__actions">
+            <a class="button button--cool" id="hero-cta" href="#cancellation-survey">Cancel Order</a>
+          </div>
+        </div>
+      </section>
+
+      <section class="decision-panel" aria-label="Cancellation context and offer">
+        <div class="decision-panel__grid">
+          <section class="credit-banner credit-banner--pending" aria-labelledby="credit-title">
+            <div class="credit-banner__content">
+              <h2 id="credit-title">Credit for this box</h2>
+              <p id="credit-status-copy">
+                If you cancel your order now, this is the account credit currently available.
+              </p>
+              <div class="credit-progress" id="credit-progress" aria-hidden="true">
+                <div class="credit-progress__step" data-credit="90">
+                  <div class="credit-progress__dot"></div>
+                  <div class="credit-progress__labels">
+                    <span class="credit-progress__stage">Order created</span>
+                    <span class="credit-progress__pct">90% credit</span>
+                  </div>
+                </div>
+                <div class="credit-progress__line"></div>
+                <div class="credit-progress__step" data-credit="60">
+                  <div class="credit-progress__dot"></div>
+                  <div class="credit-progress__labels">
+                    <span class="credit-progress__stage">Box packed</span>
+                    <span class="credit-progress__pct">60% credit</span>
+                  </div>
+                </div>
+                <div class="credit-progress__line"></div>
+                <div class="credit-progress__step" data-credit="0">
+                  <div class="credit-progress__dot"></div>
+                  <div class="credit-progress__labels">
+                    <span class="credit-progress__stage">Out for delivery</span>
+                    <span class="credit-progress__pct">Credit unavailable</span>
+                  </div>
+                </div>
+              </div>
+              <div class="credit-outcome">
+                <span class="credit-outcome__eyebrow">Account credit available</span>
+                <strong class="credit-outcome__value" id="credit-value">Pending</strong>
+                <p class="credit-outcome__detail" id="credit-detail">
+                  Account credit is not available for this order yet.
+                </p>
+              </div>
+              <p class="credit-banner__note">
+                <strong>Note:</strong>
+                <span id="credit-support">
+                  This credit will be applied to your EveryPlate account. It is not a refund to your original payment method.
+                </span>
+              </p>
+            </div>
+          </section>
+
+          <div class="decision-panel__context">
+            <p class="page-greeting" id="hero-greeting" hidden></p>
+            <p>
+              To give you a better idea of our weekly order deadline, we lock in orders early so we buy exactly what's needed from our suppliers. This helps reduce food waste and keep dinners affordable.
+            </p>
+            <p>
+              Because we've already started prepping your box, we can't do a cash refund, but we can give you credit toward your next lot of meals.
+            </p>
+            <p>
+              Not sure when your weekly order deadline is? Head to the <strong>My Menu</strong> section of your account. For more information, please visit our <a href="https://www.everyplate.com.au/about/faq" target="_blank" rel="noreferrer">FAQs</a>.
+            </p>
+
+            <div class="decision-panel__details">
+              <h3>Order details</h3>
+              <p class="decision-panel__detail-line" id="cutoff-date-row" hidden>
+                <strong>Order deadline passed:</strong> <span id="cutoff-date-display"></span>
+              </p>
+              <p class="decision-panel__detail-line" id="delivery-date-row">
+                <strong>Upcoming delivery date:</strong> <span id="next-delivery-date">Sunday --</span>
+              </p>
+              <p class="decision-panel__detail-line">
+                <strong>Subscription:</strong> This request applies to this box only. Your subscription will
+                remain active.
+              </p>
+              <p class="decision-panel__detail-line">
+                <strong>Important:</strong> Any discount redeemed on this box will be lost if you cancel
+                and cannot be transferred.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="decision-panel__visual" aria-label="Box tracker visual">
+          <img
+            class="decision-panel__tracker-image"
+            src="./box_delivery_process.jpeg"
+            alt="EveryPlate order and delivery process"
+          />
+        </div>
+      </section>
+
+      <section class="survey" id="cancellation-survey" aria-labelledby="survey-title">
+        <div class="survey__header">
+          <h2 id="survey-title">Cancel your upcoming order</h2>
+          <p>
+            Share your details below so we can complete your cancellation request.
+          </p>
+        </div>
+
+        <form class="survey-form" id="cancellation-form">
+          <div class="survey-form__grid">
+            <label class="form-field" for="name">
+              <span>Name</span>
+              <input id="name" name="name" type="text" autocomplete="name" readonly />
+            </label>
+
+            <label class="form-field" for="email">
+              <span>Email</span>
+              <input id="email" name="email" type="email" autocomplete="email" readonly />
+            </label>
+
+            <label class="form-field form-field--full" for="reason">
+              <span>Reason for cancelling</span>
+              <textarea
+                id="reason"
+                name="reason"
+                rows="6"
+                placeholder="Tell us why you'd like to cancel this order."
+                required
+              ></textarea>
+            </label>
+          </div>
+
+          <div class="survey-form__footer">
+            <p class="survey-form__summary" id="form-credit-summary">
+              We'll confirm the current credit available when you submit your cancellation request.
+            </p>
+            <button class="button button--primary" id="submit-button" type="submit">
+              Submit cancellation request
+            </button>
+          </div>
+
+          <div class="form-feedback" id="form-feedback" hidden role="status" aria-live="polite"></div>
+        </form>
+      </section>
+    </main>
+
+    <footer class="legal-footer" aria-labelledby="legal-footer-title">
+      <div class="legal-footer__inner">
+        <h2 class="legal-footer__title" id="legal-footer-title">Terms and Conditions</h2>
+        <p class="legal-footer__copy">
+          These terms apply to eligible EveryPlate customers who receive a direct SMS invitation to
+          submit a cancellation request for an upcoming order after cut off. By submitting a request
+          through this page, the customer acknowledges that EveryPlate may accept or decline the
+          request having regard to the status of the relevant order. If EveryPlate accepts the
+          request, account credit may be applied as follows: 90% account credit where the request is
+          submitted within 16 hours after cut off, 60% account credit where the request is submitted
+          more than 16 hours and up to 48 hours after cut off, and 0% account credit where the
+          request is submitted more than 48 hours after cut off. Any account credit offered under
+          this process will be applied to the customer's EveryPlate account within 48 hours of the
+          cancellation being completed and will not be refunded to the original payment method.
+        </p>
+        <p class="legal-footer__copy">
+          This process is available only to customers identified by EveryPlate as eligible for this
+          activity and who receive access to this page through the relevant SMS communication.
+          Submission of a request does not guarantee cancellation or account credit. Personal
+          information collected through this page will be handled in accordance with EveryPlate's
+          Privacy Policy for the purpose of assessing and processing the request.
+        </p>
+      </div>
+    </footer>
+
+    <script>
+      // DOM refs
+      const creditBanner = document.querySelector(".credit-banner");
+      const creditValue = document.getElementById("credit-value");
+      const creditDetail = document.getElementById("credit-detail");
+      const creditSupport = document.getElementById("credit-support");
+      const creditStatusCopy = document.getElementById("credit-status-copy");
+      const formCreditSummary = document.getElementById("form-credit-summary");
+      const feedback = document.getElementById("form-feedback");
+      const submitButton = document.getElementById("submit-button");
+      const heroCta = document.getElementById("hero-cta");
+      const orderStatusCopy = document.getElementById("order-status-copy");
+
+      let currentCreditState = null;
+
+      // Mock delivery date: Sunday 5 July 2026
+      const MOCK_DELIVERY_DATE = new Date(Date.UTC(2026, 6, 5, 12, 0, 0, 0));
+      const SYDNEY_FORMATTER = new Intl.DateTimeFormat("en-AU", {
+        timeZone: "Australia/Sydney",
+        weekday: "long",
+        day: "numeric",
+        month: "long",
+      });
+
+      document.getElementById("next-delivery-date").textContent =
+        SYDNEY_FORMATTER.format(MOCK_DELIVERY_DATE);
+      document.getElementById("delivery-date-row").hidden = false;
+      document.getElementById("name").value = "Preview User";
+      document.getElementById("email").value = "preview@everyplate.com.au";
+
+      // Helpers
+      function showFeedback(state, message) {
+        feedback.hidden = false;
+        feedback.dataset.state = state;
+        feedback.textContent = message;
+      }
+
+      function clearFeedback() {
+        feedback.hidden = true;
+        feedback.dataset.state = "";
+        feedback.textContent = "";
+      }
+
+      function setSubmitDisabled(disabled, label) {
+        submitButton.disabled = disabled;
+        submitButton.textContent = label || "Submit cancellation request";
+      }
+
+      function updateProgressBar(state) {
+        const steps = document.querySelectorAll(".credit-progress__step");
+        const lines = document.querySelectorAll(".credit-progress__line");
+
+        steps.forEach((s) =>
+          s.classList.remove("credit-progress__step--active", "credit-progress__step--past")
+        );
+        lines.forEach((l) => l.classList.remove("credit-progress__line--past"));
+
+        if (state.status !== "active" || state.tier === null) return;
+
+        const creditToIndex = { 90: 0, 60: 1, 0: 2 };
+        const activeIndex = creditToIndex[state.tier.value];
+
+        if (activeIndex === undefined) return;
+
+        steps.forEach((step, i) => {
+          if (i < activeIndex) step.classList.add("credit-progress__step--past");
+          else if (i === activeIndex) step.classList.add("credit-progress__step--active");
+        });
+        lines.forEach((line, i) => {
+          if (i < activeIndex) line.classList.add("credit-progress__line--past");
+        });
+      }
+
+      function updateSubmissionState() {
+        clearFeedback();
+
+        if (!currentCreditState) {
+          setSubmitDisabled(true, "Checking availability...");
+          return;
+        }
+
+        if (currentCreditState.feedbackMessage) {
+          showFeedback(currentCreditState.feedbackState, currentCreditState.feedbackMessage);
+        }
+
+        if (currentCreditState.status === "active") {
+          setSubmitDisabled(false);
+          return;
+        }
+
+        setSubmitDisabled(true, currentCreditState.submitLabel);
+      }
+
+      function renderState(state) {
+        currentCreditState = state;
+        updateProgressBar(state);
+
+        creditBanner.classList.remove(
+          "credit-banner--pending",
+          "credit-banner--90",
+          "credit-banner--60",
+          "credit-banner--0",
+          "credit-banner--expired",
+          "credit-banner--invalid"
+        );
+
+        if (state.status === "active" && state.tier) {
+          creditBanner.classList.add("credit-banner--" + state.tier.value);
+          creditValue.textContent = state.tier.value + "%";
+        } else if (state.status === "expired") {
+          creditBanner.classList.add("credit-banner--expired");
+          creditValue.textContent = "Closed";
+        } else {
+          creditBanner.classList.add("credit-banner--invalid");
+          creditValue.textContent = "Unavailable";
+        }
+
+        creditDetail.textContent = state.detail;
+        creditSupport.textContent = state.support;
+        creditStatusCopy.textContent = state.bannerCopy;
+        orderStatusCopy.textContent = state.heroCopy;
+        formCreditSummary.textContent = state.support;
+
+        if (heroCta) {
+          heroCta.textContent = state.buttonLabel;
+          heroCta.href = state.buttonHref;
+        }
+
+        updateSubmissionState();
+      }
+
+      // Hardcoded states
+      var PREVIEW_STATES = {
+        "90": {
+          status: "active",
+          trackedState: "active_90",
+          tier: { value: 90 },
+          detail: "Full account credit available for this order.",
+          support: "Heads up! If your cancellation goes through, the credit will be applied to your EveryPlate account within 48 hours. You can use this on future dinners, it's not a refund to your original payment method.",
+          bannerCopy: "Cancel now to get a 90% account credit to use on your next delivery.",
+          heroCopy: "Your box is being prepared, but you can still request to cancel it here.",
+          buttonLabel: "Cancel Order",
+          buttonHref: "#cancellation-survey",
+          submitLabel: "Submit cancellation request",
+          feedbackMessage: "",
+          feedbackState: "",
+        },
+        "60": {
+          status: "active",
+          trackedState: "active_60",
+          tier: { value: 60 },
+          detail: "Partial account credit available for this order.",
+          support: "If your cancellation is completed, this account credit will be applied to your EveryPlate account within 48 hours. It is not a refund to your original payment method.",
+          bannerCopy: "Since we're further along, we can give you a 60% account credit if you cancel now.",
+          heroCopy: "Your box is being prepared, but you can still request to cancel it here.",
+          buttonLabel: "Cancel Order",
+          buttonHref: "#cancellation-survey",
+          submitLabel: "Submit cancellation request",
+          feedbackMessage: "",
+          feedbackState: "",
+        },
+        "0": {
+          status: "active",
+          trackedState: "active_0",
+          tier: { value: 0 },
+          detail: "Account credit is no longer available for this order.",
+          support: "Your order is already being prepared. You can still ask us to cancel it, but no credit will be applied.",
+          bannerCopy: "You can still cancel this box, but account credit is no longer available for this order.",
+          heroCopy: "Your box is being prepared, but you can still request to cancel it here.",
+          buttonLabel: "Cancel Order",
+          buttonHref: "#cancellation-survey",
+          submitLabel: "Submit cancellation request",
+          feedbackMessage: "",
+          feedbackState: "",
+        },
+        "expired": {
+          status: "expired",
+          trackedState: "expired",
+          tier: null,
+          detail: "This cancellation window has closed as the delivery date has passed.",
+          support: "This page only applies to the box linked in your SMS. You can still manage future boxes in your account.",
+          bannerCopy: "This page only applies to the box linked in your SMS.",
+          heroCopy: "We're sorry, the cancellation window has closed because it's already out for delivery.",
+          buttonLabel: "Manage in account",
+          buttonHref: "https://www.everyplate.com.au/login",
+          submitLabel: "Window closed",
+          feedbackMessage: "We're sorry, the cancellation window has closed because it's already out for delivery.",
+          feedbackState: "error",
+        },
+        "error": {
+          status: "invalid_order",
+          trackedState: "invalid_order",
+          tier: null,
+          detail: "This cancellation link is missing a token.",
+          support: "Please use the link from your SMS to access this page.",
+          bannerCopy: "This cancellation link is missing a token.",
+          heroCopy: "This cancellation link is invalid. Please use the link from your SMS.",
+          buttonLabel: "Manage in account",
+          buttonHref: "https://www.everyplate.com.au/login",
+          submitLabel: "Manage in account",
+          feedbackMessage: "This cancellation link is invalid. Please use the link from your SMS.",
+          feedbackState: "error",
+        },
+      };
+
+      function switchState(key) {
+        renderState(PREVIEW_STATES[key]);
+      }
+
+      // Form submit — preview no-op
+      document.getElementById("cancellation-form").addEventListener("submit", function (e) {
+        e.preventDefault();
+        showFeedback(
+          "success",
+          "Preview mode — this form does not submit. In production, this sends the cancellation request to the API."
+        );
+      });
+
+      // Initial render
+      switchState("90");
+    </script>
+  </body>
+</html>
