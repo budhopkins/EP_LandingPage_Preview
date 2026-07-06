@@ -62,10 +62,11 @@
 
       /* ── Production styles (verbatim from styles.css) ─────────── */
       :root {
-        --ep-orange: #f99d33;
-        --ep-orange-deep: #e67e00;
-        --ep-orange-hero: #f7b24a;
-        --ep-blue: #007885;
+        --ep-red-light: #ffe4da;
+        --ep-red-light-hover: #f9cabe;
+        --ep-red-deep: #da3920;
+        --ep-grey-dark: #2d211b;
+        --ep-grey-dark-hover: #3d2d24;
         --ep-cream: #fff6eb;
         --ep-cream-soft: #fbf6ef;
         --ep-border: #ece7de;
@@ -156,7 +157,7 @@
         margin-left: calc(50% - 50vw);
         margin-right: calc(50% - 50vw);
         padding: 28px max(calc((100vw - 1180px) / 2), 20px) 36px;
-        background: var(--ep-orange-hero);
+        background: var(--ep-red-light);
       }
 
       .legal-footer__inner {
@@ -226,8 +227,8 @@
 
       .site-header__login:hover,
       .site-header__login:focus-visible {
-        color: var(--ep-orange-deep);
-        border-color: var(--ep-orange-deep);
+        color: var(--ep-red-deep);
+        border-color: var(--ep-red-deep);
       }
 
       .order-status,
@@ -348,7 +349,7 @@
       }
 
       .decision-panel__context a {
-        color: var(--ep-orange-deep);
+        color: var(--ep-red-deep);
         text-decoration: underline;
         text-underline-offset: 2px;
       }
@@ -438,7 +439,7 @@
         width: 18px;
         height: 18px;
         border-radius: 50%;
-        border: 2.5px solid rgba(0, 120, 133, 0.35);
+        border: 2.5px solid rgba(45, 33, 27, 0.35);
         background: var(--ep-white);
         transition: background 240ms ease, border-color 240ms ease;
         flex-shrink: 0;
@@ -447,7 +448,7 @@
       .credit-progress__line {
         flex: 1;
         height: 2.5px;
-        background: rgba(0, 120, 133, 0.2);
+        background: rgba(45, 33, 27, 0.2);
         margin-top: 7.5px;
         transition: background 240ms ease;
       }
@@ -476,22 +477,22 @@
       }
 
       .credit-progress__step--active .credit-progress__dot {
-        background: var(--ep-blue);
-        border-color: var(--ep-blue);
+        background: var(--ep-grey-dark);
+        border-color: var(--ep-grey-dark);
       }
 
       .credit-progress__step--active .credit-progress__stage,
       .credit-progress__step--active .credit-progress__pct {
-        color: var(--ep-blue);
+        color: var(--ep-grey-dark);
       }
 
       .credit-progress__step--past .credit-progress__dot {
-        background: rgba(0, 120, 133, 0.35);
-        border-color: rgba(0, 120, 133, 0.35);
+        background: rgba(45, 33, 27, 0.35);
+        border-color: rgba(45, 33, 27, 0.35);
       }
 
       .credit-progress__line--past {
-        background: rgba(0, 120, 133, 0.5);
+        background: rgba(45, 33, 27, 0.5);
       }
 
       .credit-outcome {
@@ -499,7 +500,7 @@
         margin-top: 20px;
         padding: 24px 24px 22px;
         border: 0;
-        background: rgba(0, 120, 133, 0.88);
+        background: rgba(45, 33, 27, 0.88);
       }
 
       .credit-outcome__eyebrow {
@@ -584,7 +585,7 @@
       .credit-banner--expired .credit-outcome,
       .credit-banner--pending .credit-outcome,
       .credit-banner--invalid .credit-outcome {
-        background: rgba(0, 120, 133, 0.88);
+        background: rgba(45, 33, 27, 0.88);
       }
 
       .survey h2 {
@@ -627,13 +628,13 @@
       }
 
       .button--primary {
-        background: var(--ep-orange);
-        color: var(--ep-white);
+        background: var(--ep-red-light);
+        color: var(--ep-grey-dark);
         box-shadow: none;
       }
 
       .button--cool {
-        background: var(--ep-blue);
+        background: var(--ep-grey-dark);
         color: var(--ep-white);
         box-shadow: none;
       }
@@ -641,14 +642,14 @@
       .button--primary:hover,
       .button--primary:focus-visible {
         transform: translateY(-1px);
-        background: #f58c10;
+        background: var(--ep-red-light-hover);
         box-shadow: none;
       }
 
       .button--cool:hover,
       .button--cool:focus-visible {
         transform: translateY(-1px);
-        background: #05616b;
+        background: var(--ep-grey-dark-hover);
         box-shadow: none;
       }
 
@@ -662,7 +663,7 @@
       .survey {
         margin-top: 48px;
         padding: 40px 28px;
-        background: var(--ep-blue);
+        background: var(--ep-grey-dark);
       }
 
       .survey__header {
@@ -744,8 +745,8 @@
       .form-field select:focus,
       .form-field textarea:focus {
         outline: none;
-        border-color: rgba(216, 107, 0, 0.48);
-        box-shadow: 0 0 0 4px rgba(255, 143, 28, 0.12);
+        border-color: rgba(218, 57, 32, 0.48);
+        box-shadow: 0 0 0 4px rgba(218, 57, 32, 0.12);
         background: var(--ep-white);
       }
 
@@ -781,7 +782,7 @@
 
       .form-feedback {
         padding: 16px 18px;
-        border: 1px solid rgba(216, 107, 0, 0.14);
+        border: 1px solid rgba(218, 57, 32, 0.14);
         background: rgba(255, 255, 255, 0.92);
         color: var(--ep-ink);
         border-radius: 0;
@@ -793,7 +794,7 @@
       }
 
       .form-feedback[data-state="duplicate"] {
-        border-color: rgba(216, 107, 0, 0.18);
+        border-color: rgba(218, 57, 32, 0.18);
         background: rgba(255, 246, 230, 0.94);
       }
 
