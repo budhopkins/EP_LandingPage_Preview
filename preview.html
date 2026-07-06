@@ -254,11 +254,11 @@
         min-height: 520px;
         padding-top: 88px;
         padding-bottom: 96px;
-        background-color: var(--ep-orange-hero);
-        background-image: url("./Desktop.jpg");
-        background-position: center center;
+        background-color: #7a1300;
+        background-image: url("./hero-banner-desktop.jpg");
+        background-position: left center;
         background-repeat: no-repeat;
-        background-size: 132% auto;
+        background-size: cover;
         padding-left: max(calc((100vw - 1180px) / 2), 20px);
         padding-right: max(calc((100vw - 1180px) / 2), 20px);
       }
@@ -288,18 +288,18 @@
       }
 
       .order-status__copy {
-        max-width: 860px;
-        margin: 0 auto;
+        max-width: 480px;
+        margin: 0;
         padding: 10px 0;
-        text-align: center;
+        text-align: left;
       }
 
       .order-status__copy p {
-        max-width: 48ch;
+        max-width: 42ch;
         margin: 22px 0 0;
-        margin-left: auto;
+        margin-left: 0;
         margin-right: auto;
-        text-align: center;
+        text-align: left;
         font-size: 1.22rem;
         line-height: 1.5;
       }
@@ -605,7 +605,7 @@
         display: flex;
         gap: 14px;
         margin-top: 36px;
-        justify-content: center;
+        justify-content: flex-start;
       }
 
       .button {
@@ -821,8 +821,13 @@
           padding-bottom: 40px;
           padding-left: 20px;
           padding-right: 20px;
+          background-image: url("./hero-banner-tablet.jpg");
           background-size: cover;
-          background-position: center center;
+          background-position: left center;
+        }
+
+        .order-status__copy {
+          max-width: 380px;
         }
 
         .survey {
@@ -854,6 +859,14 @@
           padding-bottom: 32px;
           padding-left: 20px;
           padding-right: 20px;
+          min-height: 540px;
+          background-image: url("./hero-banner-mobile.jpg");
+          background-size: cover;
+          background-position: top center;
+        }
+
+        .order-status__copy {
+          max-width: none;
         }
 
         .credit-banner {
@@ -914,7 +927,7 @@
       <div class="site-header__inner">
         <a class="site-header__brand" href="https://www.everyplate.com.au/" aria-label="EveryPlate home">
           <img
-            src="https://media.everyplate.com/w_256%2Cq_100%2Cf_auto%2Cc_limit%2Cfl_lossy/hellofresh_website/logo/whitelabel_logos_lg/ep_lg.png"
+            src="https://hf-website-live.s3.eu-west-1.amazonaws.com/Primary_Full_Color+(3).png"
             alt="EveryPlate"
           />
         </a>
