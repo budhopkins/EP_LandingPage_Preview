@@ -1229,6 +1229,7 @@
         creditStatusCopy.textContent = state.bannerCopy;
         if (orderStatusTitle) orderStatusTitle.textContent = state.heroTitle || DEFAULT_HERO_TITLE;
         orderStatusCopy.textContent = state.heroCopy;
+        formCreditSummary.hidden = Boolean(state.feedbackMessage);
         formCreditSummary.textContent = state.support;
 
         if (heroCta) {
