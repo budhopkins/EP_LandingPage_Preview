@@ -733,6 +733,13 @@
         cursor: pointer;
       }
 
+      .form-field select[disabled] {
+        color: rgba(255, 255, 255, 0.92);
+        background: rgba(255, 255, 255, 0.12);
+        border-color: rgba(255, 255, 255, 0.28);
+        cursor: not-allowed;
+      }
+
       .form-field input:focus,
       .form-field select:focus,
       .form-field textarea:focus {
@@ -896,7 +903,7 @@
       <select id="state-picker" onchange="switchState(this.value)">
         <option value="90">90% Credit — full (within 15h of cut-off)</option>
         <option value="60">60% Credit — partial (15–48h after cut-off)</option>
-        <option value="0">0% Credit — none (48h+ after cut-off)</option>
+        <option value="0">0% Credit — locked (48h+ after cut-off)</option>
         <option value="expired">Expired — delivery date passed</option>
         <option value="error">Error — invalid / missing link</option>
       </select>
@@ -1079,9 +1086,10 @@
           through this page, the customer acknowledges that EveryPlate may accept or decline the
           request having regard to the status of the relevant order. If EveryPlate accepts the
           request, account credit may be applied as follows: 90% account credit where the request is
-          submitted within 15 hours after cut off, 60% account credit where the request is submitted
-          more than 15 hours and up to 48 hours after cut off, and 0% account credit where the
-          request is submitted more than 48 hours after cut off. Any account credit offered under
+          submitted within 15 hours after cut off, and 60% account credit where the request is
+          submitted more than 15 hours and up to 48 hours after cut off. Cancellation requests can
+          only be submitted through this page up to 48 hours after cut off; customers with an urgent
+          issue after this time should contact our Customer Care team. Any account credit offered under
           this process will be applied to the customer's EveryPlate account within 48 hours of the
           cancellation being completed and will not be refunded to the original payment method.
         </p>
@@ -1105,8 +1113,11 @@
       const formCreditSummary = document.getElementById("form-credit-summary");
       const feedback = document.getElementById("form-feedback");
       const submitButton = document.getElementById("submit-button");
+      const reasonField = document.getElementById("reason");
       const heroCta = document.getElementById("hero-cta");
       const orderStatusCopy = document.getElementById("order-status-copy");
+      const orderStatusTitle = document.getElementById("order-status-title");
+      const DEFAULT_HERO_TITLE = orderStatusTitle ? orderStatusTitle.textContent : "";
 
       let currentCreditState = null;
 
@@ -1141,6 +1152,7 @@
       function setSubmitDisabled(disabled, label) {
         submitButton.disabled = disabled;
         submitButton.textContent = label || "Submit cancellation request";
+        if (reasonField) reasonField.disabled = disabled;
       }
 
       function updateProgressBar(state) {
@@ -1152,7 +1164,7 @@
         );
         lines.forEach((l) => l.classList.remove("credit-progress__line--past"));
 
-        if (state.status !== "active" || state.tier === null) return;
+        if ((state.status !== "active" && state.status !== "locked") || state.tier === null) return;
 
         const creditToIndex = { 90: 0, 60: 1, 0: 2 };
         const activeIndex = creditToIndex[state.tier.value];
@@ -1201,7 +1213,7 @@
           "credit-banner--invalid"
         );
 
-        if (state.status === "active" && state.tier) {
+        if ((state.status === "active" || state.status === "locked") && state.tier) {
           creditBanner.classList.add("credit-banner--" + state.tier.value);
           creditValue.textContent = state.tier.value + "%";
         } else if (state.status === "expired") {
@@ -1215,6 +1227,7 @@
         creditDetail.textContent = state.detail;
         creditSupport.textContent = state.support;
         creditStatusCopy.textContent = state.bannerCopy;
+        if (orderStatusTitle) orderStatusTitle.textContent = state.heroTitle || DEFAULT_HERO_TITLE;
         orderStatusCopy.textContent = state.heroCopy;
         formCreditSummary.textContent = state.support;
 
@@ -1257,18 +1270,19 @@
           feedbackState: "",
         },
         "0": {
-          status: "active",
+          status: "locked",
           trackedState: "active_0",
           tier: { value: 0 },
-          detail: "Account credit is no longer available for this order.",
-          support: "Your order is already being prepared. You can still ask us to cancel it, but no credit will be applied.",
-          bannerCopy: "You can still cancel this box, but account credit is no longer available for this order.",
-          heroCopy: "Your box is being prepared, but you can still request to cancel it here.",
-          buttonLabel: "Cancel Order",
-          buttonHref: "#cancellation-survey",
-          submitLabel: "Submit cancellation request",
-          feedbackMessage: "",
-          feedbackState: "",
+          detail: "This order can no longer be cancelled through this page.",
+          support: "Your order is already being prepared, so we're no longer able to process a cancellation here. If you have an urgent issue, please contact our Customer Care team.",
+          bannerCopy: "This box can no longer be cancelled from this page — it's already being prepared.",
+          heroTitle: "Your box is already being prepared",
+          heroCopy: "This order can't be cancelled from this page anymore. For help with this order, please contact our Customer Care team.",
+          buttonLabel: "Contact Customer Care",
+          buttonHref: "https://www.everyplate.com.au/contact",
+          submitLabel: "Cancellation unavailable",
+          feedbackMessage: "This order is already being prepared, so we can't process a cancellation through this page. Please contact our Customer Care team for help.",
+          feedbackState: "error",
         },
         "expired": {
           status: "expired",
