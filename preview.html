@@ -790,6 +790,12 @@
         border-radius: 0;
       }
 
+      .form-feedback a {
+        color: var(--ep-red-deep);
+        text-decoration: underline;
+        text-underline-offset: 2px;
+      }
+
       .form-feedback[data-state="success"] {
         border-color: rgba(31, 128, 76, 0.18);
         background: rgba(234, 248, 239, 0.92);
@@ -1173,7 +1179,7 @@
       function showFeedback(state, message) {
         feedback.hidden = false;
         feedback.dataset.state = state;
-        feedback.textContent = message;
+        feedback.innerHTML = message;
       }
 
       function clearFeedback() {
@@ -1315,7 +1321,7 @@
           buttonLabel: "Contact Customer Care",
           buttonHref: "https://www.everyplate.com.au/contact",
           submitLabel: "Cancellation unavailable",
-          feedbackMessage: "This order is already being prepared, so we can't process a cancellation through this page. Please contact our Customer Care team for help.",
+          feedbackMessage: 'This order is already being prepared, so we can\'t process a cancellation through this page. Please contact our <a href="https://www.everyplate.com.au/contact" target="_blank" rel="noopener">Customer Care team</a> for help.',
           feedbackState: "error",
         },
         "expired": {
