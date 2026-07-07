@@ -157,7 +157,7 @@
         margin-left: calc(50% - 50vw);
         margin-right: calc(50% - 50vw);
         padding: 28px max(calc((100vw - 1180px) / 2), 20px) 36px;
-        background: var(--ep-grey-dark);
+        background: var(--ep-red-light);
       }
 
       .legal-footer__inner {
@@ -169,13 +169,13 @@
         margin: 0 0 12px;
         font-size: 0.95rem;
         font-weight: 700;
-        color: var(--ep-white);
+        color: var(--ep-ink);
       }
 
       .legal-footer__copy {
         max-width: 1180px;
         margin: 0;
-        color: var(--ep-white);
+        color: var(--ep-ink);
         font-size: 0.78rem;
         line-height: 1.55;
       }
@@ -628,8 +628,8 @@
       }
 
       .button--primary {
-        background: var(--ep-grey-dark);
-        color: var(--ep-white);
+        background: var(--ep-red-light);
+        color: var(--ep-grey-dark);
         box-shadow: none;
       }
 
@@ -642,7 +642,7 @@
       .button--primary:hover,
       .button--primary:focus-visible {
         transform: translateY(-1px);
-        background: var(--ep-grey-dark-hover);
+        background: var(--ep-red-light-hover);
         box-shadow: none;
       }
 
@@ -663,7 +663,7 @@
       .survey {
         margin-top: 48px;
         padding: 40px 28px;
-        background: var(--ep-red-light);
+        background: var(--ep-grey-dark);
       }
 
       .survey__header {
@@ -673,7 +673,7 @@
 
       .survey h2 {
         font-size: clamp(2rem, 4vw, 3rem);
-        color: var(--ep-grey-dark);
+        color: var(--ep-white);
       }
 
       .survey__header p {
@@ -687,7 +687,7 @@
       }
 
       .survey p {
-        color: var(--ep-grey-dark);
+        color: var(--ep-white);
       }
 
       .survey-form__grid {
@@ -704,7 +704,7 @@
       .form-field span {
         font-size: 0.95rem;
         font-weight: 700;
-        color: var(--ep-grey-dark);
+        color: var(--ep-white);
       }
 
       .form-field input,
@@ -724,9 +724,9 @@
       }
 
       .form-field input[readonly] {
-        color: rgba(45, 33, 27, 0.85);
-        background: rgba(45, 33, 27, 0.08);
-        border-color: rgba(45, 33, 27, 0.28);
+        color: rgba(255, 255, 255, 0.92);
+        background: rgba(255, 255, 255, 0.12);
+        border-color: rgba(255, 255, 255, 0.28);
         cursor: not-allowed;
       }
 
@@ -735,9 +735,9 @@
       }
 
       .form-field select[disabled] {
-        color: rgba(45, 33, 27, 0.85);
-        background: rgba(45, 33, 27, 0.08);
-        border-color: rgba(45, 33, 27, 0.28);
+        color: rgba(255, 255, 255, 0.92);
+        background: rgba(255, 255, 255, 0.12);
+        border-color: rgba(255, 255, 255, 0.28);
         cursor: not-allowed;
       }
 
@@ -761,7 +761,7 @@
 
       .survey-form__footer {
         padding: 24px 0 0;
-        border-top: 1px solid rgba(45, 33, 27, 0.22);
+        border-top: 1px solid rgba(255, 255, 255, 0.22);
         display: flex;
         align-items: center;
         justify-content: flex-start;
@@ -771,7 +771,7 @@
       .survey-form__summary {
         margin: 0;
         font-size: 1.02rem;
-        color: var(--ep-grey-dark);
+        color: var(--ep-white);
         flex: 1;
         order: 2;
       }
@@ -1070,8 +1070,10 @@
                 <option value="Changed my mind">Changed my mind</option>
                 <option value="Delivery timing doesn't work for me">Delivery timing doesn't work for me</option>
                 <option value="Too many meals / need to skip">Too many meals / need to skip</option>
+                <option value="I forgot to skip this week">I forgot to skip this week</option>
                 <option value="Cost / too expensive">Cost / too expensive</option>
                 <option value="Quality or recipe concern">Quality or recipe concern</option>
+                <option value="I don't like the selected meals">I don't like the selected meals</option>
                 <option value="Other">Other</option>
               </select>
             </label>
